@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-    logger.InitLogger("logs", logger.DebugLevel)
+    logger.InitLogger(logger.DebugLevel)
 	
 	s := server.NewGinServer(":8080", router.SetupRoutes)
 	if err := s.Start(); err != nil {

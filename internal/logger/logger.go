@@ -3,6 +3,7 @@ package logger
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -12,20 +13,27 @@ import (
 
 var sugar *zap.SugaredLogger
 
-func InitLogger(logDir string, level LogLevel) {
-    if _, err := os.Stat(logDir); os.IsNotExist(err) {
-        os.MkdirAll(logDir, 0755)
-    }
+func InitLogger(level LogLevel) {
+    if goTest() {
+		sugar = zap.NewNop().Sugar()
+		return
+	}
+
+    // 固定寫入根目錄 logs 資料夾
+	rootDir := projectRoot()
+	logDir := filepath.Join(rootDir, "logs")
+	if _, err := os.Stat(logDir); os.IsNotExist(err) {
+		os.MkdirAll(logDir, 0755)
+	}
 
     today := time.Now().Format("2006-01-02")
     logFile := filepath.Join(logDir, today+".log")
 
-    // lumberjack：自動切割 log
     lumberjackLogger := &lumberjack.Logger{
         Filename:   logFile,
         MaxSize:    10,   // 每個檔案最大 10MB
-        MaxBackups: 7,    // 保留 7 個舊檔案
-        MaxAge:     30,   // 保留 30 天
+        MaxBackups: 31,    // 保留 n 個舊檔案
+        MaxAge:     31,   // 保留 n 天
         Compress:   true, // 是否壓縮
     }
 
@@ -75,3 +83,34 @@ func Debugf(template string, args ...interface{}) { sugar.Debugf(template, args.
 func Infof(template string, args ...interface{})  { sugar.Infof(template, args...) }
 func Warnf(template string, args ...interface{})  { sugar.Warnf(template, args...) }
 func Errorf(template string, args ...interface{}) { sugar.Errorf(template, args...) }
+
+func goTest() bool {
+	// 依據 runtime 調用 stack 判斷是否為測試
+	for _, arg := range os.Args {
+		if strings.HasPrefix(arg, "-test.") {
+			return true
+		}
+	}
+	return false
+}
+
+func projectRoot() string {
+	// 固定為 go module 根目錄
+	dir, err := os.Getwd()
+	if err != nil {
+		return "."
+	}
+
+	for {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir { // 到達根目錄
+			break
+		}
+		dir = parent
+	}
+	return "."
+}
