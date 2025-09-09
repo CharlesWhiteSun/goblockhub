@@ -1,18 +1,19 @@
 package handler
 
 import (
+	"goblockhub/internal/response"
 	"goblockhub/internal/service"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type BinanceHandler struct {
 	svc service.IPlatformService
+	resp response.IResponseHandler
 }
 
-func NewBinanceHandler(svc service.IPlatformService) IPlatformHandler {
-	return &BinanceHandler{svc: svc}
+func NewBinanceHandler(svc service.IPlatformService, resp response.IResponseHandler) IPlatformHandler {
+	return &BinanceHandler{svc: svc, resp: resp}
 }
 
 func (h *BinanceHandler) RegisterRoutes(r *gin.Engine) {
@@ -21,5 +22,5 @@ func (h *BinanceHandler) RegisterRoutes(r *gin.Engine) {
 }
 
 func (h *BinanceHandler) getStatus(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": h.svc.GetStatus()})
+	h.resp.Success(c, gin.H{"status": h.svc.GetStatus()}, "Binance status retrieved successfully")
 }
