@@ -1,7 +1,7 @@
 //go:build slow
 // +build slow
 
-package server
+package server_test
 
 import (
 	"context"

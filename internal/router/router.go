@@ -1,6 +1,9 @@
 package router
 
 import (
+	"goblockhub/internal/handler"
+	"goblockhub/internal/response"
+	"goblockhub/internal/service"
 	"net/http"
 	"time"
 
@@ -9,7 +12,14 @@ import (
 
 func SetupRoutes(engine *gin.Engine) {
 
-	for _, h := range getPlatformHandlers() {
+	respHandler := response.NewResponseHandler()
+
+	handlers := []handler.IPlatformHandler{
+		handler.NewBinanceHandler(service.NewBinanceService(), respHandler),
+		handler.NewOKXHandler(service.NewOKXService(), respHandler),
+	}
+
+	for _, h := range handlers {
 		h.RegisterRoutes(engine)
 	}
 

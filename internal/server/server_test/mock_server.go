@@ -1,10 +1,12 @@
-package server
+package server_test
 
 import (
 	"context"
 	"fmt"
 	"sync"
 	"time"
+
+	"goblockhub/internal/server"
 )
 
 type mockServer struct {
@@ -15,7 +17,7 @@ type mockServer struct {
 	activeRequests sync.WaitGroup
 }
 
-func NewMockServer() Server {
+func NewMockServer() server.Server {
 	return &mockServer{
 		done: make(chan struct{}),
 	}
