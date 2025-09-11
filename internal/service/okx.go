@@ -6,6 +6,6 @@ func NewOKXService() IPlatformService {
 	return &OKXService{}
 }
 
-func (s *OKXService) GetStatus() string {
-	return "OKX OK"
+func (s *OKXService) GetStatus() (bool, error) {
+	return true, nil
 }

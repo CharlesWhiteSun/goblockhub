@@ -4,6 +4,8 @@ import (
 	"goblockhub/internal/response"
 	"goblockhub/internal/service"
 
+	"github.com/CharlesWhiteSun/gomodx/errorx"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,11 +18,20 @@ func NewOKXHandler(svc service.IPlatformService, resp response.IResponseHandler)
 	return &OKXHandler{svc: svc, resp: resp}
 }
 
-func (h *OKXHandler) RegisterRoutes(r *gin.Engine) {
+func (o *OKXHandler) RegisterRoutes(r *gin.Engine) {
 	api := r.Group("/api/okx")
-	api.GET("/status", h.getStatus)
+	api.GET("/status", o.getStatus)
 }
 
-func (h *OKXHandler) getStatus(c *gin.Context) {
-	h.resp.Success(c, gin.H{"status": h.svc.GetStatus()}, "OKX status retrieved successfully")
+func (o *OKXHandler) getStatus(c *gin.Context) {
+	ok, err := o.svc.GetStatus()
+	if !ok {
+		o.resp.Error(c, errorx.API_REQ_FAILED, err.Error())
+		return
+	}
+	if err != nil {
+		o.resp.Success(c, nil, err.Error())
+		return
+	}
+	o.resp.Success(c, nil, "OK")
 }
