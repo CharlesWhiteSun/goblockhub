@@ -1,16 +1,17 @@
 package response
 
 import (
-	"goblockhub/internal/error"
-	"goblockhub/internal/logger"
 	"net/http"
+
+	"github.com/CharlesWhiteSun/gomodx/errorx"
+	"github.com/CharlesWhiteSun/gomodx/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
 type IResponseHandler interface {
 	Success(c *gin.Context, data any, msg string)
-	Error(c *gin.Context, code error.ErrorCode, msg ...string)
+	Error(c *gin.Context, code errorx.ErrorCode, msg ...string)
 }
 
 type ResponseHandler struct{}
@@ -24,13 +25,13 @@ func (r *ResponseHandler) Success(c *gin.Context, data any, msg string) {
 	
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"code":    error.SUCCESS,
+		"code":    errorx.SUCCESS,
 		"message": msg,
 		"data":    data,
 	})
 }
 
-func (r *ResponseHandler) Error(c *gin.Context, code error.ErrorCode, msg ...string) {
+func (r *ResponseHandler) Error(c *gin.Context, code errorx.ErrorCode, msg ...string) {
 	message := code.String()
 	if len(msg) > 0 {
 		message = msg[0]

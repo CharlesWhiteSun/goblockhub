@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"goblockhub/internal/logger"
+	"github.com/CharlesWhiteSun/gomodx/logger"
 )
 
 func TestMain(m *testing.M) {

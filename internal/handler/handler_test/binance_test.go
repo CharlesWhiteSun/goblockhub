@@ -1,11 +1,12 @@
 package handler_test
 
 import (
-	"goblockhub/internal/error"
 	"goblockhub/internal/handler"
 	"goblockhub/internal/response"
 	"goblockhub/internal/service"
 	"testing"
+
+	"github.com/CharlesWhiteSun/gomodx/errorx"
 
 	"net/http/httptest"
 
@@ -39,7 +40,7 @@ func TestBinanceHandler_Error(t *testing.T) {
 
 	r := gin.New()
 	r.GET("/api/binance/error", func(c *gin.Context) {
-		respHandler.Error(c, error.INVALID_PARAMS, "Invalid params test")
+		respHandler.Error(c, errorx.INVALID_PARAMS, "Invalid params test")
 	})
 
 	req := httptest.NewRequest("GET", "/api/binance/error", nil)
