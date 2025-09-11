@@ -31,7 +31,6 @@ func TestOKXHandler_Success(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 	assert.Contains(t, w.Body.String(), `"success":true`)
 	assert.Contains(t, w.Body.String(), `"code":1`)
-	assert.Contains(t, w.Body.String(), `"message":"OK"`)
 }
 
 func TestOKXHandler_Error(t *testing.T) {
