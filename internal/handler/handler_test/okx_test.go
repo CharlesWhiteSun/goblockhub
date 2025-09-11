@@ -1,11 +1,12 @@
 package handler_test
 
 import (
-	"goblockhub/internal/error"
 	"goblockhub/internal/handler"
 	"goblockhub/internal/response"
 	"goblockhub/internal/service"
 	"testing"
+
+	"github.com/CharlesWhiteSun/gomodx/errorx"
 
 	"net/http/httptest"
 
@@ -39,7 +40,7 @@ func TestOKXHandler_Error(t *testing.T) {
 
 	r := gin.New()
 	r.GET("/api/okx/error", func(c *gin.Context) {
-		respHandler.Error(c, error.NOT_FOUND, "Not found test")
+		respHandler.Error(c, errorx.NOT_FOUND, "Not found test")
 	})
 
 	req := httptest.NewRequest("GET", "/api/okx/error", nil)

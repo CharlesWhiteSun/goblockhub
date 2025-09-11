@@ -1,12 +1,9 @@
 # GoBlockHub
-
 A modular Go API server for interacting with multiple blockchain platforms.  
 Currently supports **Binance** and **OKX**, with easy scalability for future platforms.
 
----
 
 ## Features
-
 - Modular router with platform-specific handlers
 - DI (Dependency Injection) pattern for Service → Handler → Response
 - Standardized API responses: success code = 1, error codes starting from 10001
@@ -18,79 +15,65 @@ Currently supports **Binance** and **OKX**, with easy scalability for future pla
 - Ready for integration with real blockchain APIs
 - Independent unit tests with mock servers for Binance and OKX
 
----
 
 ## Installation
-
--- Clone the repository and install dependencies
-
--- bash
+Clone the repository and install dependencies
+``` bash
 git clone https://github.com/CharlesWhiteSun/goblockhub.git
 cd goblockhub
 go mod tidy
+```
 
----
 
 ## Running the Server
+Start the server on http://localhost:8080
+``` bash
+go run .\main.go
+```
 
--- Start the server
-
--- bash
-go run main.go
-
--- The server will start on http://localhost:8080.
-
----
 
 ## API Examples
 
 ### Ping test
-
--- bash
+Response: pong
+``` bash
 curl http://localhost:8080/ping
+```
 
--- Response: pong
 
 ### Slow test
-
--- bash
+Response: finished slow API
+``` bash
 curl http://localhost:8080/slow
+```
 
--- Response: finished slow API
 
 ### Binance status
-
--- bash
+Response: {"status":"Binance OK"}
+``` bash
 curl http://localhost:8080/api/binance/status
+```
 
--- Response: {"status":"Binance OK"}
 
 ### OKX status
-
--- bash
+Response: {"status":"OKX OK"}
+```bash
 curl http://localhost:8080/api/okx/status
+```
 
--- Response: {"status":"OKX OK"}
-
----
 
 ## How to Extend
-
 1. Implement a new Service implementing `IPlatformService`
 2. Implement a new Handler implementing `IPlatformHandler`
 3. Register the handler in `router/registry.go`
 4. Router automatically registers all handlers on server start
 
----
 
 ## CI / Testing
-
-- Cross-platform GitHub Actions CI workflow for Ubuntu, Windows, and macOS
+- Cross-platform GitHub Actions CI workflow for Windows
 - Builds, runs tests, and performs `golangci-lint`
 - Unit tests for handlers using mock servers, including graceful shutdown scenarios
 
----
 
 ## License
-
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.

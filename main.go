@@ -1,9 +1,10 @@
 package main
 
 import (
-	"goblockhub/internal/logger"
 	"goblockhub/internal/router"
 	"goblockhub/internal/server"
+
+	"github.com/CharlesWhiteSun/gomodx/logger"
 )
 
 func main() {
