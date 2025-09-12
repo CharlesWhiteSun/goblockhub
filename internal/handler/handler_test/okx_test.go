@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestOKXHandler_Success(t *testing.T) {
+func TestOKXHandlerSuccess(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	respHandler := response.NewResponseHandler()
@@ -33,7 +33,7 @@ func TestOKXHandler_Success(t *testing.T) {
 	assert.Contains(t, w.Body.String(), `"code":1`)
 }
 
-func TestOKXHandler_Error(t *testing.T) {
+func TestOKXHandlerError(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	respHandler := response.NewResponseHandler()
 

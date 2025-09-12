@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBinanceHandler_Success(t *testing.T) {
+func TestBinanceHandlerSuccess(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	respHandler := response.NewResponseHandler()
@@ -33,7 +33,7 @@ func TestBinanceHandler_Success(t *testing.T) {
 	assert.Contains(t, w.Body.String(), `"code":1`)
 }
 
-func TestBinanceHandler_Error(t *testing.T) {
+func TestBinanceHandlerError(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	respHandler := response.NewResponseHandler()
 

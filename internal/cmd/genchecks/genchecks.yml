@@ -1,0 +1,39 @@
+files:
+  - output: "../../service/gen_check.go"
+    package: "service"
+    interfaces:
+      - name: "IStatusService"
+        impls:
+          - "BinanceService"
+          - "OKXService"
+      - name: "ITimeService"
+        impls:
+          - "BinanceService"
+
+
+  - output: "../../handler/gen_check.go"
+    package: "handler"
+    interfaces:
+      - name: "IPlatformHandler"
+        impls:
+          - "BinanceHandler"
+          - "OKXHandler"
+
+
+  - output: "../../schedule/gen_check.go"
+    package: "schedule"
+    interfaces:
+      - name: "ISchedule"
+        impls:
+          - "TimeSchedule"
+      - name: "IJob"
+        impls:
+          - "JobManager"
+
+
+  - output: "../../manager/gen_check.go"
+    package: "manager"
+    interfaces:
+      - name: "IJob"
+        impls:
+          - "JobManager"

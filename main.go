@@ -1,6 +1,7 @@
 package main
 
 import (
+	"goblockhub/internal/cmd/boot"
 	"goblockhub/internal/router"
 	"goblockhub/internal/server"
 
@@ -8,8 +9,8 @@ import (
 )
 
 func main() {
-    logger.InitLogger(logger.DebugLevel)
-	
+	boot.Initial()
+
 	s := server.NewGinServer(":8080", router.SetupRoutes)
 	if err := s.Start(); err != nil {
 		logger.Errorf("server start error: %v", err)
