@@ -14,7 +14,7 @@ import (
 type BinanceService struct {
 	mu         sync.Mutex
 	serverTime int64     // 最近一次從伺服器抓到的時間
-	lastUpdate time.Time // 本地時間對應上次 serverTime 的時間
+	lastUpdate time.Time // 對應 serverTime 的本地單調時間
 }
 
 func NewBinanceService() *BinanceService {
@@ -89,13 +89,13 @@ func (s *BinanceService) GetTime() (bool, int64, error) {
 
 	s.mu.Lock()
 	s.serverTime = result.ServerTime
-	s.lastUpdate = time.Now()
+	s.lastUpdate = time.Now() // time.Now() 內部有單調時鐘
 	s.mu.Unlock()
 
 	return true, result.ServerTime, nil
 }
 
-// CurrentTime 回傳隨本地時間增長的伺服器時間戳
+// CurrentTime 回傳隨本地單調時間增長的伺服器時間戳
 func (s *BinanceService) CurrentTime() (bool, int64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -103,9 +103,8 @@ func (s *BinanceService) CurrentTime() (bool, int64) {
 	if s.serverTime == 0 {
 		return false, 0
 	}
-
+	
 	elapsed := time.Since(s.lastUpdate).Milliseconds()
-	s.serverTime += elapsed
-	s.lastUpdate = time.Now()
-	return true, s.serverTime
+	current := s.serverTime + elapsed // 只回傳計算結果，不修改基準 serverTime
+	return true, current
 }
