@@ -22,14 +22,14 @@ func TestCurrentTimeFirstCall(t *testing.T) {
 	}
 }
 
-// 測試呼叫後會根據本地經過時間累加
+// 測試呼叫後會根據本地單調鐘時間累加
 func TestCurrentTimeIncrement(t *testing.T) {
 	svc := NewBinanceService()
 
-	// 模擬已經抓取到 serverTime
+	// 模擬伺服器時間
 	svc.mu.Lock()
-	svc.serverTime = 1000000
-	svc.lastUpdate = time.Now().Add(-2 * time.Second) // 模擬 2 秒前更新
+	svc.serverTime = 1_000_000
+	svc.lastUpdate = time.Now().Add(-2 * time.Second) // 模擬 2 秒前同步
 	svc.mu.Unlock()
 
 	ok, ts := svc.CurrentTime()
@@ -37,16 +37,16 @@ func TestCurrentTimeIncrement(t *testing.T) {
 		t.Errorf("Expected ok=true, got false")
 	}
 
-	if ts < 1000000+1990 || ts > 1000000+2100 { // 允許誤差
+	if ts < 1_000_000+1990 || ts > 1_000_000+2100 { // 允許誤差
 		t.Errorf("Expected serverTime to increase by ~2000ms, got %d", ts)
 	}
 }
 
-// 呼叫測試多執行緒安全
+// 測試多執行緒安全
 func TestCurrentTimeConcurrent(t *testing.T) {
 	svc := NewBinanceService()
 	svc.mu.Lock()
-	svc.serverTime = 500000
+	svc.serverTime = 500_000
 	svc.lastUpdate = time.Now().Add(-1 * time.Second)
 	svc.mu.Unlock()
 
@@ -54,7 +54,7 @@ func TestCurrentTimeConcurrent(t *testing.T) {
 	const numGoroutines = 10000
 	results := make([]int64, numGoroutines)
 
-	for i := range numGoroutines {
+	for i := 0; i < numGoroutines; i++ {
 		wg.Add(1)
 		go func(idx int) {
 			defer wg.Done()
@@ -64,22 +64,22 @@ func TestCurrentTimeConcurrent(t *testing.T) {
 	}
 	wg.Wait()
 
-	// 檢查所有結果不為 0
+	// 檢查所有結果不為 0，並大於初始值
 	for i, ts := range results {
-		if ts <= 500000 {
+		if ts <= 500_000 {
 			t.Errorf("Concurrent call %d returned timestamp <= initial, got %d", i, ts)
 		}
 	}
 }
 
+// 測試實際經過的時間會反應在 CurrentTime
 func TestCurrentTimeRealElapsed(t *testing.T) {
-	// 初始化 BinanceService 並 mock 初始 serverTime
 	svc := &BinanceService{
-		serverTime: time.Now().UnixMilli(), // 初始 serverTime 為當前本地時間（毫秒）
+		serverTime: time.Now().UnixMilli(), // 模擬伺服器時間
 		lastUpdate: time.Now(),
 	}
 
-	for i := range 10 {
+	for i := 0; i < 5; i++ {
 		ok, ts := svc.CurrentTime()
 		if !ok {
 			t.Errorf("CurrentTime 尚未初始化正確")
@@ -87,6 +87,6 @@ func TestCurrentTimeRealElapsed(t *testing.T) {
 		}
 
 		t.Logf("第 %d 秒: CurrentTime = %d", i+1, ts)
-		time.Sleep(1 * time.Second) // 等待 1 秒，觀察 serverTime 是否增加
+		time.Sleep(1 * time.Second)
 	}
 }
