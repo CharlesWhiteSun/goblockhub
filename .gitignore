@@ -33,3 +33,6 @@ go.work.sum
 
 # Logs
 logs/
+
+# auto gen check file
+gen_check.go

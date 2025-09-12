@@ -24,7 +24,7 @@ func TestOKXHandler_Success(t *testing.T) {
 	r := gin.New()
 	h.RegisterRoutes(r)
 
-	req := httptest.NewRequest("GET", "/api/okx/status", nil)
+	req := httptest.NewRequest("GET", "/api/okx/v1/status", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -38,11 +38,11 @@ func TestOKXHandler_Error(t *testing.T) {
 	respHandler := response.NewResponseHandler()
 
 	r := gin.New()
-	r.GET("/api/okx/error", func(c *gin.Context) {
+	r.GET("/api/okx/v1/error", func(c *gin.Context) {
 		respHandler.Error(c, errorx.NOT_FOUND, "Not found test")
 	})
 
-	req := httptest.NewRequest("GET", "/api/okx/error", nil)
+	req := httptest.NewRequest("GET", "/api/okx/v1/error", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
