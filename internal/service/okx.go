@@ -2,7 +2,7 @@ package service
 
 type OKXService struct{}
 
-func NewOKXService() IPlatformService {
+func NewOKXService() *OKXService {
 	return &OKXService{}
 }
 

@@ -10,21 +10,28 @@ import (
 )
 
 type OKXHandler struct {
-	svc service.IPlatformService
-	resp response.IResponseHandler
+	svcStat service.IStatusService
+	resp    response.IResponseHandler
 }
 
-func NewOKXHandler(svc service.IPlatformService, resp response.IResponseHandler) IPlatformHandler {
-	return &OKXHandler{svc: svc, resp: resp}
+func NewOKXHandler(svc *service.OKXService, resp response.IResponseHandler) IPlatformHandler {
+	return &OKXHandler{
+		svcStat: svc,
+		resp:    resp,
+	}
 }
 
 func (o *OKXHandler) RegisterRoutes(r *gin.Engine) {
 	api := r.Group("/api/okx")
-	api.GET("/status", o.getStatus)
+
+	v1 := api.Group("/v1")
+	{
+		v1.GET("/status", o.GetStatus)
+	}
 }
 
-func (o *OKXHandler) getStatus(c *gin.Context) {
-	ok, err := o.svc.GetStatus()
+func (o *OKXHandler) GetStatus(c *gin.Context) {
+	ok, err := o.svcStat.GetStatus()
 	if !ok {
 		o.resp.Error(c, errorx.API_REQ_FAILED, err.Error())
 		return

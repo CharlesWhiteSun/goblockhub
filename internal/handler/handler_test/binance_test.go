@@ -24,7 +24,7 @@ func TestBinanceHandler_Success(t *testing.T) {
 	r := gin.New()
 	h.RegisterRoutes(r)
 
-	req := httptest.NewRequest("GET", "/api/binance/status", nil)
+	req := httptest.NewRequest("GET", "/api/binance/v1/status", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -38,11 +38,11 @@ func TestBinanceHandler_Error(t *testing.T) {
 	respHandler := response.NewResponseHandler()
 
 	r := gin.New()
-	r.GET("/api/binance/error", func(c *gin.Context) {
+	r.GET("/api/binance/v1/error", func(c *gin.Context) {
 		respHandler.Error(c, errorx.INVALID_PARAMS, "Invalid params test")
 	})
 
-	req := httptest.NewRequest("GET", "/api/binance/error", nil)
+	req := httptest.NewRequest("GET", "/api/binance/v1/error", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
