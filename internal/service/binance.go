@@ -5,11 +5,17 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/CharlesWhiteSun/gomodx/logger"
 )
 
-type BinanceService struct{}
+type BinanceService struct {
+	mu         sync.Mutex
+	serverTime int64     // 最近一次從伺服器抓到的時間
+	lastUpdate time.Time // 本地時間對應上次 serverTime 的時間
+}
 
 func NewBinanceService() *BinanceService {
 	return &BinanceService{}
@@ -81,5 +87,25 @@ func (s *BinanceService) GetTime() (bool, int64, error) {
 		return false, 0, emsg
 	}
 
+	s.mu.Lock()
+	s.serverTime = result.ServerTime
+	s.lastUpdate = time.Now()
+	s.mu.Unlock()
+
 	return true, result.ServerTime, nil
+}
+
+// CurrentTime 回傳隨本地時間增長的伺服器時間戳
+func (s *BinanceService) CurrentTime() (bool, int64) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.serverTime == 0 {
+		return false, 0
+	}
+
+	elapsed := time.Since(s.lastUpdate).Milliseconds()
+	s.serverTime += elapsed
+	s.lastUpdate = time.Now()
+	return true, s.serverTime
 }
