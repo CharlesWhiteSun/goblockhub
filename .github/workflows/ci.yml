@@ -35,14 +35,17 @@ jobs:
     - name: Install dependencies
       run: go mod tidy
 
-    - name: Generate interface checks (CI only)
+    - name: Generate all interface checks (PowerShell)
       run: |
-        echo "Generating genInterfaceCheck.go..."
-        go generate ./internal/cmd/genchecks/handler
-        if [ $? -ne 0 ]; then
-          echo "❌ Interface generation failed"
-          exit 1
-        fi
+        Get-ChildItem -Directory ./internal/cmd/genchecks | ForEach-Object {
+            Write-Host "Generating gen_check in $($_.FullName)..."
+            go generate $_.FullName
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "❌ Interface generation failed in $($_.FullName)"
+                exit 1
+            }
+        }
+      shell: powershell
 
     - name: Build
       run: |
